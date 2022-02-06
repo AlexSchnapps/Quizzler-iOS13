@@ -1,17 +1,12 @@
 //
-//  ViewController.swift
+//  QuizBrain.swift
 //  Quizzler-iOS13
+//
+//  Created by Александр on 05.02.2022.
 
-import UIKit
+import Foundation
 
-class ViewController: UIViewController {
-    
-    //MARK: - IBOutlets
-    @IBOutlet weak var questionLabel: UILabel!
-    @IBOutlet weak var progressBar: UIProgressView!
-    @IBOutlet weak var trueButton: UIButton!
-    @IBOutlet weak var falseButton: UIButton!
-    
+struct QuizBrain {
     let quiz = [
         Question(q: "A slug's blood is green.", a: "True"),
         Question(q: "Approximately one quarter of human bones are in the feet.", a: "True"),
@@ -28,40 +23,36 @@ class ViewController: UIViewController {
     ]
     
     var questionNumber = 0
+    var score = 0
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        updateUI()
-    }
-    //MARK: - IBActions
-    @IBAction func answerButtomPressed(_ sender: UIButton) {
-        
-        let userAnswer = sender.currentTitle
-        let actualQuestion = quiz[questionNumber]
-        let actualAnswer = actualQuestion.answer
-        
-        if userAnswer == actualAnswer {
-            sender.backgroundColor = UIColor.green
+    mutating func checkAnswer(_ userAnswer: String) ->  Bool {
+        if userAnswer == quiz[questionNumber].answer {
+            score += 1
+            return  true
         } else {
-            sender.backgroundColor = UIColor.red
+            return false
+        }
+    }
+    
+    mutating func getScore() -> Int {
+        return score
+    }
+        func getQuestionText() -> String {
+            return quiz[questionNumber].text
+            
         }
         
-        if questionNumber < (quiz.count) - 1 {
-            questionNumber += 1
-        } else {
-            questionNumber = 0
+        func getProgress() -> Float {
+            let progress = Float(questionNumber) / Float(quiz.count)
+            return progress
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            self.updateUI()
+        
+    mutating func nextQuestion() {
+            if questionNumber + 1 < (quiz.count) {
+                questionNumber += 1
+            } else {
+                questionNumber = 0
+                score = 0
+            }
         }
     }
-    
-    func updateUI() {
-        questionLabel.text = quiz[questionNumber].text
-        trueButton.backgroundColor = UIColor.clear
-        falseButton.backgroundColor = UIColor.clear
-        progressBar.progress = Float(questionNumber + 1) / Float(quiz.count)
-    }
-    
-}
-
